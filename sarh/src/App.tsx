@@ -1,12 +1,24 @@
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { ProtectedRoute } from './components/ProtectedRoute'
+import { Spinner } from './components/Spinner'
+import { useAuth } from './hooks/useAuth'
+import CreateOrderScreen from './screens/CreateOrderScreen/Screen'
+import LoginScreen from './screens/LoginScreen/Screen'
+import OrdersScreen from './screens/OrdersScreen/Screen'
+
 function App() {
+  const { user, loading } = useAuth()
+  if (loading) return <main className="grid min-h-screen place-items-center"><Spinner label="Checking session" /></main>
+
   return (
-    <main className="min-h-screen bg-[#f4f6f3] text-[#1b2624]">
-      <div className="mx-auto max-w-7xl px-6 py-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#63806f]">SARH / Operations</p>
-        <h1 className="mt-3 text-3xl font-semibold">Orders Console</h1>
-        <p className="mt-2 text-sm text-[#66736c]">Order management workspace</p>
-      </div>
-    </main>
+    <Routes>
+      <Route path="/login" element={user ? <Navigate to="/orders" replace /> : <LoginScreen />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/orders" element={<OrdersScreen />} />
+        <Route path="/orders/new" element={<CreateOrderScreen />} />
+      </Route>
+      <Route path="*" element={<Navigate to={user ? '/orders' : '/login'} replace />} />
+    </Routes>
   )
 }
 
