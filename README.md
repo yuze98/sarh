@@ -73,24 +73,33 @@ The contractor sample had these issues; the implementation changes are listed be
 - The token was returned to JavaScript: login sets an HttpOnly, SameSite=Lax cookie; logout clears it. The Vite proxy and credentialed CORS configuration support this cookie flow.
 - JWT payload claims were trusted without validating subject/version shape: the verified payload is checked and matched against a current database user before attaching the user to the request.
 
-Client session storage: HttpOnly + SameSite=Lax cookie. TODO: Write 2–3 sentences explaining what attack this helps prevent and what it does not protect against (XSS vs CSRF).
+The session token is stored in an HttpOnly, SameSite=Lax cookie, so browser JavaScript cannot read it and a successful XSS payload cannot directly exfiltrate the token. SameSite=Lax reduces cross-site request forgery for state-changing requests, but it is not a complete CSRF defense for every deployment, so production would add a CSRF token/origin check if the frontend and API become cross-site. It does not protect against an XSS payload performing actions through the victim's active browser session.
 
 ## What I Skipped and Why
 
-O1: TODO - state what was skipped and why.
+O2: Optimistic create was skipped because O1 demonstrates request cancellation, independent loading, and retry behavior more directly; the current create flow waits for the server’s authoritative order ID and status.
 
-O2: TODO - state what was skipped and why.
+Virtualized rendering was skipped because the browser receives only one 25-row cursor page at a time; the API never sends the 50,000-row table. Deep pagination remains server-side and can be upgraded to row virtualization later without changing the API contract.
+
+Refresh tokens and production observability were also left out of this local assessment. The 15-minute session and token-version revocation are sufficient for the demonstrated workflow, while a real deployment would add structured request logs, metrics, and a deliberate refresh/session policy.
+
+## Optional O1: Slow Stats
+
+`GET /api/orders/stats` returns totals by status and revenue for the current UTC day after a deliberate four-second delay. The Orders screen requests it independently from the orders list, aborts it when the screen unmounts, and exposes a visible retry state when the request fails.
 
 ## Product Question: “Delete all cancelled orders”
 
 ### Impact
-TODO: Answer.
+
+Why are cancelled orders being removed, what retention/audit policy applies, and should “cancelled” include every age and source? I would also ask who can approve the action and whether recovery is required.
 
 ### Safeguards
-TODO: Answer.
+
+If those answers are unavailable, I would propose an admin-only archive action with a dry-run count, a date range, confirmation showing the exact scope, and an audit record instead of irreversible deletion.
 
 ### Recovery
-TODO: Answer.
+
+Archived orders remain recoverable and excluded by default; permanent deletion would be a separate, reviewed retention job rather than a button.
 
 ## Implementation Summary
 
