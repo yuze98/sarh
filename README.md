@@ -1,6 +1,6 @@
 # Orders Console
 
-Take-home assignment for a Full Stack Developer (React) role. This repository contains a React 18 + TypeScript client and an Express + TypeScript API backed by file-based SQLite.
+Take-home assignment for a Senior Full Stack Developer (React) role. This repository contains a React 18 + TypeScript client and an Express + TypeScript API backed by file-based SQLite.
 
 ## Prerequisites
 
@@ -100,7 +100,3 @@ If those answers are unavailable, I would propose an admin-only archive action w
 ### Recovery
 
 Archived orders remain recoverable and excluded by default; permanent deletion would be a separate, reviewed retention job rather than a button.
-
-## Implementation Summary
-
-See [NOTES_FOR_DECISIONS.md](NOTES_FOR_DECISIONS.md) for implementation facts to use when completing [DECISIONS.md](DECISIONS.md). Do not treat the notes as personal rationale.
